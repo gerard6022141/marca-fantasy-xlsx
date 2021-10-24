@@ -1,3 +1,5 @@
+
+
 FANTASY_API_SERVER         = 'https://api.laligafantasymarca.com'
 FANTASY_PLAYERS_URL        = 'api/v3/players'
 FANTASY_PLAYER_URL         = 'api/v3/player/'
@@ -55,3 +57,5 @@ JSON_POSS_LOST_ALL = 'poss_lost_all'
 JSON_PENALTY_CONCEDED = 'penalty_conceded'
 JSON_MARCA_POINTS = 'marca_points'
 JSON_PREVIOUS_WEEK = 'previousWeek'
+JSON_LAST_SEASON_POINTS = 'lastSeasonPoints'
+JSON_WEEK_POINTS = 'weekPoints'
