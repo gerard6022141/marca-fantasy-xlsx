@@ -4,7 +4,7 @@ Programa para descargar información y estadísticas de jugadores del juego Fant
 
 ## Instalación
 
-El programa está escrito en Ruby y por lo tanto necesita su intérprete para poder se ejecutado. En linux se puede instalar desde los repositorios de cada distribución, puedes usar [rvm](https://rvm.io/rvm/install), o puedes descargarlo desde la web del propio lenguaje [Ruby](https://www.ruby-lang.org/en/downloads/).
+El programa está escrito en Ruby y por lo tanto necesita su intérprete para poder se ejecutado. En linux se puede instalar desde los repositorios de cada distribución. En otros sistemas puedes usar [rvm](https://rvm.io/rvm/install), o puedes descargarlo desde la web del propio lenguaje [Ruby](https://www.ruby-lang.org/en/downloads/).
 
 Es necesario instalar la gem [write_xlsx](https://github.com/cxn03651/write_xlsx/tree/master) para la generación del fichero excel. Puedes hacerlo con el comando:`
 
