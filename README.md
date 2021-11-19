@@ -1,6 +1,6 @@
 # marca-fantasy-xlsx
 
-Programa para descargar información y estadísticas de jugadores del juego Fantasy Marca. La descarga se realiza en uno o varios ficheros Excel dependiendo de los parámetros especificados por línea de comandos.
+Programa para descargar a través de la API de LaLiga Fantasy de Marca información y estadísticas de jugadores del juego Fantasy Marca. La descarga se realiza en uno o varios ficheros Excel dependiendo de los parámetros especificados por línea de comandos.
 
 ## Instalación
 
