@@ -14,6 +14,10 @@ También es necesario instalar la gem [down](https://github.com/janko/down) para
 
 `$ gem install down`
 
+También es necesatio instalar la gem [optparse][https://github.com/skeeto/optparse] para la gestión de los parámetros de línea de comandos. Puedes hacerlo con el siguiente comando:
+
+`$ gem install optparse`
+
 ## Ejecución
 
 Existen varias opciones de ejecución del programa que se pueden listar con el comando:
@@ -46,6 +50,18 @@ Las opciones de ejecución son las siguientes:
     Comparación de jugadores. Se usa con la opción **--players_file** para generar un fichero que contiene información estadística de jugadores para su comparación. 
     Es recomendable usarla con **-i, --players_id LIST** y/o **-s, --search_names LIST** (ambos filtros pueden funcionar conjuntamente) para restringir la comparación
     a pocos jugadores.
+    
+ - **-l, --simulate_team_file FILE**
+ 
+    Simulación de alineaciones. Tiene como parámetro el fichero excel que contendrá la simulación de las alineaciones. Realiza una simulación de alineaciones y calcula     la alineación óptima según varios criterios de puntuación: Puntuación media, puntuación media en unas jornadas determinadas (necesita la opción --weeks),               Puntuación máxima y puntuación de la última jornada. Genera también una hoja dinámica donde simular manualmente las alineaciones calculando las puntuaciones           obtenidas por el equipo. Solo tiene en cuenta los jugadores dispobibles, los lesionados, sancionados y dudosos son excluidos de la simulación.
+    
+ - **-l, --teams_file FILE**
+ 
+    Fichero de equipos. Tiene como parámetro un fichero JSON que contiene los jugadores del equipo. En la carpeta de ejemplos se puede consultar la estructura del         fichero.
+    
+ - **-q, --include_questionable_players**
+ 
+    Incluye los jugadores dudosos en la simulación de alineaciones. 
     
   - **-w, --weeks LISTA**
  
@@ -80,4 +96,6 @@ Descarga la información estadística de los jugadores cuyos nombres contienen i
 
 Descarga la información estadística de los jugadores cuyos nombres contienen isi, galarreta y ledesma en el fichero /usr/local/data/fantasy. Genera un fichero excel que contiene información estadística de las jornadas 5 a la 10 de todos los jugadores para su comparacion y una pestaña de gráficos de los datos estadísticos.
 
+`$ ruby marca-fantasy-xlsx.rb --simulate_team_file /usr/local/data/fantasy.xlsx --teams_file teams.json --weeks 7..13`
 
+Realiza una simulación de alineaciones y guarda el resultado en el fichero /usr/local/data/fantasy.xlsx usando los jugadores del fichero teams.json y calculando las medias de puntos de las jornadas 7 a 13.
