@@ -14,7 +14,7 @@ También es necesario instalar la gem [down](https://github.com/janko/down) para
 
 `$ gem install down`
 
-También es necesatio instalar la gem [optparse][https://github.com/skeeto/optparse] para la gestión de los parámetros de línea de comandos. Puedes hacerlo con el siguiente comando:
+También es necesatio instalar la gem [optparse](https://github.com/skeeto/optparse) para la gestión de los parámetros de línea de comandos. Puedes hacerlo con el siguiente comando:
 
 `$ gem install optparse`
 
