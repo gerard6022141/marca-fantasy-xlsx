@@ -39,8 +39,28 @@ optparse = OptionParser.new do |opts|
         $options[:chart]=true
     end 
     
-    opts.on( '-m', '--compare_players', 'Compara jugadores (opcional)' ) do
+    opts.on( '-m', '--compare_players', 'Compara jugadores' ) do
         $options[:compare_players]=true
+    end
+    
+    opts.on( '-q', '--include_questionable_players', 'Incluye los jugadores cuestionables en la simulación' ) do
+        $options[:include_questionable_players]=true
+    end
+    
+    opts.on( '-l', '--simulate_team_file FILE', 'Simulación de alineaciones' ) do |file|
+        $options[:simulate_team_file]=file
+    end
+    
+    opts.on( '-t', '--teams_file FILE', 'Fichero que contiene los equipos' ) do |file|
+        $options[:teams_file]=file
+    end
+    
+    opts.on( '-f', '--players_file FILE', 'Genera un fichero que contiene todos los jugadores' ) do |file|
+        $options[:players_file]=file
+    end
+    
+    opts.on( '-j', '--last_week WEEK', 'Número de la última jornada' ) do |week|
+        $options[:last_week] = week
     end
     
     opts.on( '-w', '--weeks LISTA',Array, 'Filtra las jornadas especificadas para las estadísticas' ) do |params|
@@ -69,8 +89,8 @@ end
 
 begin
    optparse.parse!(ARGV)
-   if $options[:players_folder].nil? && $options[:players_file].nil?
-      raise "Falta parámetro: --players_folder o --players_file"
+   if $options[:players_folder].nil? && $options[:players_file].nil?  && $options[:simulate_team_file].nil?
+      raise "Falta parámetro: --players_folder, --players_file o --simulate_team_file"
       $parse_ok=false
    elsif $options[:players_file].nil? && $options[:compare_players]
       raise "El parámetro --players_file es obligatorio cuando se usa --compare_players"

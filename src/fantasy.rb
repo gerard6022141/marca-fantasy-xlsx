@@ -16,8 +16,13 @@ class Fantasy
    
    def initialize
       if @@current_week_number.nil?
-         # Descarga de la jornada actual. Se descarga solo una vez porque siempre va a ser la misma
-         @@current_week_number = get_current_week
+         if $options[:last_week].nil?
+            # Descarga de la jornada actual. Se descarga solo una vez porque siempre va a ser la misma
+            @@current_week_number = get_current_week
+         else
+            # Se ha especificado un número de jornada
+            @@current_week_number = $options[:last_week].to_i
+         end
       end
    end
 
@@ -172,13 +177,18 @@ class Fantasy
       f_chart.set_size(:x_scale => 1.5, :y_scale => 2)
       #f_chart.set_legend(:none => 1)
       
+      f_serie_data = Hash.new
+      
       p_series_data.each do |s|
-         f_chart.add_series(
-         :name => s[:name],
-         :categories  => "=#{p_worksheet_name}!$#{s[:categories_column]}$#{s[:init_line]}:$#{s[:categories_column]}$#{s[:end_line]}",
-         :values => "=#{p_worksheet_name}!$#{s[:values_column]}$#{s[:init_line]}:$#{s[:values_column]}$#{s[:end_line]}",
-         :data_labels => { :value => 1 }
-         )
+         
+         f_serie_data[:name] = s[:name]
+         f_serie_data[:categories] = "=#{p_worksheet_name}!$#{s[:categories_column]}$#{s[:init_line]}:$#{s[:categories_column]}$#{s[:end_line]}"
+         f_serie_data[:values] = "=#{p_worksheet_name}!$#{s[:values_column]}$#{s[:init_line]}:$#{s[:values_column]}$#{s[:end_line]}"
+         if s[:show_value]
+            f_serie_data[:data_labels] = { :value => 1 }
+         end
+         
+         f_chart.add_series(f_serie_data)
          
       end
       

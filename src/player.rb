@@ -89,7 +89,7 @@ class Player < Fantasy
             @stats_columns.each_with_index do |(k, v), i|
             
                # Generamos un gráfico por cada dato estadístico del jugador
-               if i != 0 && i!= 21
+               if i != 0 && i!= 21  && i!= 22
                   # Todos los datos estadísticos tiene asociados los puntos otorgados excepto los puntos
                   # totales del jugador en la jornada y los puntos marca (índices 0 y 21 del array)
                   # Hacemos la llamada a la función con dos series: una para el dato estadístico y otra
@@ -101,7 +101,7 @@ class Player < Fantasy
                else
                   #Gráfico para una sola serie
                   draw_column_chart(f_workbook, f_points_chart_worksheet, f_worksheet.name, 
-                     'column', "B#{(30 * i) + 2}", v, 'Jornada', v, 
+                     i == 22 ? 'line' : 'column', "B#{(30 * i) + 2}", v, 'Jornada', v, 
                      {:name => v, :categories_column => 'C', :values_column => k, :init_line => 18, :end_line => f_weeks_count + 17})
                end
             end
@@ -227,12 +227,12 @@ class Player < Fantasy
          p_worksheet.set_row(16, 35)
          p_worksheet.set_row(f_points_line - 1, 20)
          p_worksheet.set_row(f_points_line + 1, 35)
-         p_worksheet.set_column('D:Y', 10)
+         p_worksheet.set_column('D:Z', 10)
          p_worksheet.set_column('C:C', 15)
          
          p_worksheet.merge_range('B15:F15', 'Estadísticas', f_title_format)
          
-         draw_spreadsheet_border(p_workbook, p_worksheet, '#3498db', 'B16', "Z#{16 + f_weeks_count + 3}")
+         draw_spreadsheet_border(p_workbook, p_worksheet, '#3498db', 'B16', "AA#{16 + f_weeks_count + 3}")
          
          p_worksheet.merge_range("B#{f_points_line}:F#{f_points_line}", 
                'Puntos', f_title_format)
@@ -265,7 +265,8 @@ class Player < Fantasy
                "Balones\nrecuperados", 
                "Posesiones\nperdidas", 
                "Penaltis\ncometidos", 
-               "Puntos\nmarca"]
+               "Puntos\nmarca",
+               "Dispersión\nde la\nmedia"]
                
          f_stat_column = 'D'
          
@@ -275,7 +276,7 @@ class Player < Fantasy
             f_stat_column.succ!
          end
          
-         f_week = 1 # Número de jornada tratana en cada iteración del each de @player_data
+         f_week = 1 # Número de jornada tratada en cada iteración del each de @player_data
          f_current_row = 16
          p_worksheet.write_row(f_current_row, 3, f_column_names_array, f_tag_format)
          p_worksheet.write_row(f_points_line + 1, 3, f_column_names_array[0 .. 20], f_tag_format)
@@ -301,7 +302,8 @@ class Player < Fantasy
                      # hasta la jornada actual
                      #Líneas de estadísticas
                      p_worksheet.write("C#{f_current_row + 1}", "Jornada #{week}", f_tag_format)
-                     p_worksheet.write_row(f_current_row, 3, Array.new(22, '-'),
+                     p_worksheet.write_row(f_current_row, 3, 
+                                    Array.new(22, '-').push(-@player_data[JSON_DATA][JSON_AVERAGE_POINTS].round(2)),
                                     (week.odd?) ? f_odd_format : f_even_format)
                      #Líneas de puntos
                      p_worksheet.write("C#{f_current_row + f_weeks_count + 8}", "Jornada #{week}", f_tag_format)
@@ -347,7 +349,8 @@ class Player < Fantasy
                            v[JSON_STATS][JSON_BALL_RECOVERY][0], 
                            v[JSON_STATS][JSON_POSS_LOST_ALL][0], 
                            v[JSON_STATS][JSON_PENALTY_CONCEDED][0], 
-                           v[JSON_STATS][JSON_MARCA_POINTS][1]], 
+                           v[JSON_STATS][JSON_MARCA_POINTS][1],
+                           (v[JSON_TOTAL_POINTS] - @player_data[JSON_DATA][JSON_AVERAGE_POINTS]).round(2)], 
                            (v[JSON_WEEK_NUMBER].odd?) ? f_odd_format : f_even_format)
                
                #Línea de puntos
@@ -396,7 +399,8 @@ class Player < Fantasy
                
                #Línea de estadísticas
                p_worksheet.write("C#{f_current_row + 1}", "Jornada #{week}", f_tag_format)
-               p_worksheet.write_row(f_current_row, 3, Array.new(22, '-'),
+               p_worksheet.write_row(f_current_row, 3, 
+                              Array.new(22, '-').push(-@player_data[JSON_DATA][JSON_AVERAGE_POINTS].round(2)),
                               (week.odd?) ? f_odd_format : f_even_format)
                               
                #Línea de puntos
@@ -428,5 +432,135 @@ class Player < Fantasy
       return nil
    end
    
+   #
+   # Enumerador de las jornadas. Devuelve la información estadística de una jornada si está en el rango especificado.
+   # @param p_init_week_number [Integer, nil] Número de jornada inicial
+   # @param p_end_week_number [Integer, nil] Número de jornada final
+   #
+   # @return [Hash]
+   # @author Gerard Carrasquer
+   #
+   
+   def each_week(p_init_week_number, p_end_week_number)
+      
+      f_week = p_init_week_number
+      @player_data[JSON_DATA][JSON_PLAYER_STATS].each do |v|
+         f_week.upto(v[JSON_WEEK_NUMBER] - 1) do |i|
+            yield nil, i
+         end
+         if (p_init_week_number..p_end_week_number).include?(v[JSON_WEEK_NUMBER])
+            yield v, v[JSON_WEEK_NUMBER]
+         end
+         
+         f_week = v[JSON_WEEK_NUMBER] + 1
+      end
+      
+      f_week.upto(p_end_week_number) do |i|
+         yield nil,i
+      end
+   end
+   
+   #
+   # Devuelve la puntuación media total o de un rango de jornadas.
+   # @param p_init_week_number [Integer, nil] Número de jornada inicial
+   # @param p_end_week_number [Integer, nil] Número de jornada final
+   #
+   # @return [Float, nil]
+   # @author Gerard Carrasquer
+   #
+   
+   def get_average_points(p_init_week_number, p_end_week_number)
+      
+      f_avg_points = nil
+      
+      if @player_data[JSON_RESPONSE] == JSON_ERROR
+         f_avg_points = nil
+      else
+         f_avg_points = 0
+         f_sum_points = 0
+         f_init_week_number = 1
+         f_end_week_number = @@current_week_number
+         
+         if !p_init_week_number.nil?
+            f_init_week_number = p_init_week_number
+         end
+         
+         if !p_end_week_number.nil? && p_end_week_number < @@current_week_number
+            f_end_week_number = p_end_week_number
+         end
+         
+         if f_init_week_number == 1 &&  f_end_week_number == p_end_week_number
+            f_avg_points = @player_data[JSON_DATA][JSON_AVERAGE_POINTS].round(2)
+         else
+            each_week(f_init_week_number, f_end_week_number) do |v, i|
+               if !v.nil?
+                  f_sum_points += v[JSON_TOTAL_POINTS]
+               end
+            end
+            
+            f_avg_points = (f_sum_points.to_f / (f_end_week_number - f_init_week_number + 1)).round(2)
+         end
+      end
+      
+      return f_avg_points
+   end
+   
+   #
+   # Devuelve la máxima puntuación de un rango de jornadas.
+   # @param p_init_week_number [Integer, nil] Número de jornada inicial
+   # @param p_end_week_number [Integer, nil] Número de jornada final 
+   #
+   # @return [Float, nil]
+   # @author Gerard Carrasquer
+   #
+   
+   def get_max_points(p_init_week_number, p_end_week_number)
+      
+      f_max_points = nil
+      
+      if @player_data[JSON_RESPONSE] == JSON_ERROR
+         f_avg_points = nil
+      else
+         f_init_week_number = 1
+         f_end_week_number = @@current_week_number
+         
+         if !p_init_week_number.nil?
+            f_init_week_number = p_init_week_number
+         end
+         
+         if !p_end_week_number.nil? && p_end_week_number < @@current_week_number
+            f_end_week_number = p_end_week_number
+         end
+         
+         each_week(f_init_week_number, f_end_week_number) do |v, i|
+            #puts "Jornada #{i} puntos #{v[JSON_WEEK_NUMBER]} max points #{f_max_points}"
+            if !v.nil? && (f_init_week_number..f_end_week_number).include?(v[JSON_WEEK_NUMBER]) &&
+               (f_max_points.nil? || v[JSON_TOTAL_POINTS] > f_max_points)
+               f_max_points = v[JSON_TOTAL_POINTS]
+            end
+         end
+      end
+      
+      return f_max_points
+   end
+   
+   #
+   # Devuelve la puntuación de una jornada.
+   # @param p_week_number [Integer, nil] Número de jornada inicial
+   #
+   # @return [Integer, nil]
+   # @author Gerard Carrasquer
+   #
+   
+   def get_week_points(p_week_number)
+      
+      f_week_stats = get_week_stats(p_week_number)
+      
+      if f_week_stats.nil?
+         return nil
+      else
+         return f_week_stats[JSON_TOTAL_POINTS]
+      end
+   end
 
 end

@@ -59,3 +59,17 @@ JSON_MARCA_POINTS = 'marca_points'
 JSON_PREVIOUS_WEEK = 'previousWeek'
 JSON_LAST_SEASON_POINTS = 'lastSeasonPoints'
 JSON_WEEK_POINTS = 'weekPoints'
+
+JSON_PLAYERS = 'players'
+
+JSON_VALUE_OK = 'ok'
+JSON_VALUE_DOUBTFUL ='doubtful'
+JSON_VALUE_INJURED ='injured'
+JSON_VALUE_SUSPENDED = 'suspended'
+
+JSON_VALUE_GOALKEEPER = '1'
+JSON_VALUE_DEFENDER   = '2'
+JSON_VALUE_MIDFIELDER   = '3'
+JSON_VALUE_STRIKER      = '4'
+
+AVG_DISPERSION = 'avg_dispersion'
